@@ -76,7 +76,7 @@ int main(int argc, char *argv[]){
     send_empty_command(fd, BRIDGE_DESTROY_Q);			//Destroy a queue completely releasing memory (IMPORTANT!!)
 
     send_empty_command(fd, BRIDGE_CREATE_S);                   	//Create a stack
-    write_message(fd, BRIDGE_W_S, message);			//Write a message in the stack
+    write_message(fd, BRIDGE_W_S, "Message WS");		//Write a message in the stack
     read_message(fd, BRIDGE_R_S, message);			//Read a message from the stack
     send_empty_command(fd, BRIDGE_STATE_S);			//Get an int indicating the statte of the stack
     send_empty_command(fd, BRIDGE_DESTROY_S);			//Destroy a stack completely releasing the memory (IMPORTANT!!)
