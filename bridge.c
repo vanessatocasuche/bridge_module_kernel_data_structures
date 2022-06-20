@@ -34,25 +34,29 @@ static void add_element_to_stack(char *node_element_msg){
 	list_add(&(tmp_element->list), &stack);
 }
 
-//void mylist_exit(){
-//        struct string_node *watch, *next, *tmp_element;
-//	list_for_each_safe(watch, next, &stack){
-//        	tmp_element = list_entry(watch, struct string_node, list);
-//        	list_del(&(tmp_element->list));
-//     	}
-//     	kfree(tmp_element);
-//}
+void mylist_exit(void){
+        struct string_node *tmp_element;
+	struct list_head *watch, *next;
+	list_for_each_safe(watch, next, &stack){
+        	tmp_element = list_entry(watch, struct string_node, list);
+        	list_del(&(tmp_element->list));
+		kfree(tmp_element);
+     	}
+     	//kfree(&stack);
+}
 
 struct bridge_dev *bridge_devices;	/* allocated in bridge_init_module */
 
 static long bridge_ioctl(struct file *f, unsigned int cmd, unsigned long arg){
+    int return_value = 0;
     int data;
     char message[100];
+    struct string_node *tmp_element;
     switch(cmd){
 	case BRIDGE_CREATE_Q:
             printk(KERN_INFO "message %s\n", "bla");
 	    //Return a posituve value indicating the state of the queue
-	    return 1;
+	    return_value = 1;
 	    break;
 	case BRIDGE_W_HIGH_PRIOR_Q:
     	    raw_copy_from_user(message, (char *)arg, 100);
@@ -89,10 +93,18 @@ static long bridge_ioctl(struct file *f, unsigned int cmd, unsigned long arg){
             printk(KERN_INFO "Element succesfully added to the stack\n");
 	    break;
 	case BRIDGE_R_S:
-            printk(KERN_INFO "message %s\n", "bla10");
+	    tmp_element = list_last_entry(&stack, struct string_node, list);
+            list_del(&(tmp_element->list));
+	    raw_copy_to_user((char *)arg, tmp_element->message, 100);
+	    kfree(tmp_element);
 	    break;
 	case BRIDGE_STATE_S:
-            printk(KERN_INFO "message %s\n", "bla11");
+            if(list_empty(&stack) != 0){
+		return_value = 0;
+	    }else{
+		return_value = 1;
+	    }
+	    printk(KERN_INFO "Stack state succesfully sended!!!\n");
 	    break;
 	case BRIDGE_DESTROY_S:
             printk(KERN_INFO "message %s\n", "bla12");
@@ -133,7 +145,7 @@ static long bridge_ioctl(struct file *f, unsigned int cmd, unsigned long arg){
 	case BRIDGE_DESTROY_L:
              printk(KERN_INFO "message %s\n", "bla24");
     }
-    return 0;
+    return return_value;
 }
 
 struct file_operations bridge_fops = {
@@ -154,7 +166,7 @@ void bridge_cleanup_module(void)
 {
 	int i;
 	dev_t devno = MKDEV(bridge_major, bridge_minor);
-
+	mylist_exit();
 	/* Get rid of our char dev entries */
 	if (bridge_devices) {
 		for (i = 0; i < bridge_nr_devs; i++) {
