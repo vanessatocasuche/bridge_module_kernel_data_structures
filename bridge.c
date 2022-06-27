@@ -52,6 +52,7 @@ static long bridge_ioctl(struct file *f, unsigned int cmd, unsigned long arg){
     int data;
     char message[100];
     struct string_node *tmp_element;
+    struct complex_struct tmp;
     switch(cmd){
 	case BRIDGE_CREATE_Q:
             printk(KERN_INFO "message %s\n", "bla");
@@ -144,6 +145,12 @@ static long bridge_ioctl(struct file *f, unsigned int cmd, unsigned long arg){
 	     break;
 	case BRIDGE_DESTROY_L:
              printk(KERN_INFO "message %s\n", "bla24");
+	case BRIDGE_W_CS:
+	    raw_copy_from_user(&tmp, (struct complex_struct *)arg, sizeof(struct complex_struct));
+	    printk(KERN_INFO "Message1 %s\n", tmp.messages[0]);
+            printk(KERN_INFO "Message2 %s\n", tmp.messages[1]);
+            printk(KERN_INFO "Message3 %s\n", tmp.messages[2]);
+
     }
     return return_value;
 }

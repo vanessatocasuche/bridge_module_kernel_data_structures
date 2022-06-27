@@ -32,4 +32,11 @@
 #define BRIDGE_STATE_L _IO('p', 24)
 #define BRIDGE_DESTROY_L _IO('p', 25)
 
+#define BRIDGE_W_CS _IOW('p', 26, unsigned long*)
+
+struct complex_struct{
+	int value;
+	char messages[3][100];
+};
+
 #endif

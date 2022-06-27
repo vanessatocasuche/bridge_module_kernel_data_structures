@@ -7,6 +7,12 @@
 #include <stdlib.h>
 #include "clientBridge.h"
 
+void write_struct(int fd, unsigned long command, struct complex_struct * struct_address){
+    if (ioctl(fd, command, struct_address) == -1){
+        perror("Write message error at ioctl");
+    }
+}
+
 void write_message(int fd, unsigned long command, char * message){
     if (ioctl(fd, command, message) == -1){
         perror("Write message error at ioctl");
@@ -107,6 +113,12 @@ int main(int argc, char *argv[]){
     //send_empty_command(fd, BRIDGE_CONCAT_L);			//Concatenate two previous list in a third new one
     //send_empty_command(fd, BRIDGE_STATE_L);			//Get an int indicating the state of a list
     //send_empty_command(fd, BRIDGE_DESTROY_L);			//Destroy all the list of the module releasing memory (IMPORTANT!!)
+    struct complex_struct tmp;
+    strcpy((tmp.messages)[0],"Complex struct message 1");
+    strcpy((tmp.messages)[1], "Complex struct message 2");
+    strcpy((tmp.messages)[2], "Complex struct message 3");
+    tmp.value = 3;
+    write_struct(fd, BRIDGE_W_CS, &tmp);
     write_several_messages(fd);
     read_all_messages(fd);
     close (fd);
