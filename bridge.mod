@@ -1,2 +1,2 @@
-/home/jlopez/Lectures/OS/bridge_module_kernel_data_structures/bridge.o
+/home/vane/Desktop/so/lab1/bridge_module_kernel_data_structures/bridge.o
 

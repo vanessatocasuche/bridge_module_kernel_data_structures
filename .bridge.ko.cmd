@@ -1,0 +1,1 @@
+cmd_/home/vane/Desktop/so/lab1/bridge_module_kernel_data_structures/bridge.ko := ld -r -m elf_x86_64 --build-id=sha1  -T scripts/module.lds -o /home/vane/Desktop/so/lab1/bridge_module_kernel_data_structures/bridge.ko /home/vane/Desktop/so/lab1/bridge_module_kernel_data_structures/bridge.o /home/vane/Desktop/so/lab1/bridge_module_kernel_data_structures/bridge.mod.o;  true
