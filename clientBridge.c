@@ -57,18 +57,226 @@ int send_empty_command(int fd, unsigned long command){
     }
 }
 
-void write_several_messages(int fd){
-    write_message(fd, BRIDGE_W_S, "Message 1");
-    write_message(fd, BRIDGE_W_S, "Message 2");
-    write_message(fd, BRIDGE_W_S, "Message 3");
+
+// void write_several_messages(int fd){
+//     write_message(fd, BRIDGE_W_S, "Message 1");
+//     write_message(fd, BRIDGE_W_S, "Message 2");
+//     write_message(fd, BRIDGE_W_S, "Message 3");
+// }
+
+void read_all_messages_s(int fd){
+	char message[100];
+	while(send_empty_command(fd, BRIDGE_STATE_S) > 0){
+	    read_message(fd, BRIDGE_R_S, message);
+	    printf("%s", message);
+	}
 }
 
-void read_all_messages(int fd){
+
+void create_s(int fd){
+    send_empty_command(fd, BRIDGE_CREATE_S);
+    printf("\nse creó el stack.\n");
+}
+
+struct list_struct
+{
+	int message;
+	struct list_head list;
+	
+};
+
+/**
+ * @brief Crea un nodo tipo list_struct, le agrega el dato al nodo.
+ * ESte nodo que devuelve el método se debe agregar a la listacon el 
+ * siguiente comando : list_add(&(node->list),&list_head);
+ * 
+ * @param message 
+ * @return struct list_struct* : nodo completo para agregar a la lista  con 
+ */
+struct list_struct* create_l(int* message){
+    struct list_struct *node;
+    int date = *message;
+    
+    node = (struct list_struct*)malloc(sizeof(struct list_struct));
+
+    node -> message = date;
+    INIT_LIST_HEAD( &node -> list );
+
+    return node;
+}
+
+/**
+ * @brief Error en la clase, imprime en circulo...
+ * 
+ * @param node_head 
+ */
+void read_all_messages_l(struct list_head node_head){
+    struct list_struct *pos;
+    list_for_each_entry(pos,&node_head,list){
+        printf("%p\t%d -> ",&pos->list, pos->message);
+    }
+}
+
+void main_list(int fd){
+
+    //Crear los nodos con el dato
+    struct list_struct *pos;
+    int message = 01;
+    struct list_struct *node1 = create_l(&message);
+    message = 02;
+    struct list_struct *node2 = create_l(&message);
+    message = 03;
+    struct list_struct *node3 = create_l(&message);
+    message = 04;
+    struct list_struct *node4 = create_l(&message);
+ 
+
+    // printf("node:\t%p\t%p\t%p\n",&node->list,
+    //                      (node->list).next,
+    //                      (node->list).prev);
+
+    //printf("\t\t%p\t%d",&pos->list, pos->message);
+
+    // printf("\nnode2:\t%p\t%p\t%p",&node2->list,
+    //                      (node2->list).next,
+    //                      (node2->list).prev);
+
+    //printf("\t\t%p\t%d",&pos->list, pos->message);
+    
+    //nodo cabeza
+    LIST_HEAD(list_head);
+
+    //Añador los nodos en el nodo cabeza
+    list_add(&(node1->list),&list_head);
+    list_add(&(node2->list),&list_head);
+    list_add(&(node3->list),&list_head);
+    list_add(&(node4->list),&list_head);
+
+
+    //read_all_messages_l(list_head, pos);
+    // Mostrar datos de los nodos
+    list_for_each_entry(pos,&list_head,list){
+        printf("%p\t%d -> ",&pos->list, pos->message);
+    }
+
+    
+    // Eliminar la lista y liberar los nodos 
+    list_del(&(node1->list));
+    free(node1);
+    list_del(&(node2->list));
+    free(node2);
+    list_del(&(node3->list));
+    free(node3);
+    list_del(&(node4->list));
+    free(node4);
+    
+}
+
+
+void firstPoint(int fd) {
+    char filePath[100];
+    printf("\n1. Reverse the lines of a text file.");
+    printf("\n   Input the file path: ");
+    scanf("%s", filePath);
+
+    FILE * fp;
+    char * line = NULL;
+    size_t len = 0;
+    ssize_t read;
+
+    fp = fopen(filePath, "r");
+    if (fp == NULL) {
+        perror("First point open file.");
+    }
+
+    printf("\n File content:\n");
+    create_s(fd);
+    while ((read = getline(&line, &len, fp)) != -1) {
+        printf("%s", line);
+        write_message(fd, BRIDGE_W_S, line);
+    }
+    printf("\n Reversed file:\n");
+    read_all_messages_s(fd);
+
+    fclose(fp);
+    if (line)
+        free(line);
+}
+
+void secondPoint(int fd){
+    char filePath[100];
+    printf("2. Barajar lineas de archivo.\n");
+    printf("   Nombre del archivo: \n");
+    scanf("%s", filePath);
+
+    FILE * fp;
+    char * line = NULL;
+    size_t len = 0;
+    ssize_t read;
+
+    fp = fopen(filePath, "r+");
+    if (fp == NULL) {
+        perror("First point open file.");
+    }
+
+    printf("\n  Archivo inicial:\n");
+    while ((read = getline(&line, &len, fp)) != -1) {
+        printf("%s", line);
+        write_message(fd, BRIDGE_W_L, line);
+    }
+
 	char message[100];
-	while( send_empty_command(fd, BRIDGE_STATE_S) > 0){
-	    read_message(fd, BRIDGE_R_S, message);
-	    printf("Message: %s\n", message);
-	}
+    while( send_empty_command(fd, BRIDGE_STATE_L)>0){
+        read_message(fd, BRIDGE_R_L, message);
+        fputs(message, fp);
+        printf("%s", message);
+    }
+
+    printf("\n Archivo barajado:\n");
+    //read_all_messages_l(fd);
+
+    fclose(fp);
+    if (line)
+        free(line);
+
+}
+
+void menu(int fd) {
+    int opcion = 99; // Just don't init with 0 plz
+    do{
+        printf("\n === First Practice Menu === \n");
+        printf("0. Exit.\n");
+        printf("1. roy.\n");
+        printf("2. vane.\n");
+        printf("3. roy.\n");
+        printf("4. Gab.\n");
+        printf("5. .\n");
+        printf("6. .\n");
+        printf("7. .\n");
+        printf("8. .\n");
+        printf("9. .\n");
+        printf("10. .\n");
+        printf("Input which point of this practice you wanna try: ");
+        scanf("%d", &opcion);
+        switch (opcion)
+        {
+            case 1:
+                firstPoint(fd);
+                break;
+            case 2:
+                main_list(fd);
+                //secondPoint(fd);
+                break;
+            case 3:
+            case 4:
+            case 5:
+            case 6:
+
+        }
+        printf("\nThe selected option was: ");
+        printf("%d\n", opcion);
+    }
+    while(opcion != 0);
 }
 
 int main(int argc, char *argv[]){
@@ -113,14 +321,16 @@ int main(int argc, char *argv[]){
     //send_empty_command(fd, BRIDGE_CONCAT_L);			//Concatenate two previous list in a third new one
     //send_empty_command(fd, BRIDGE_STATE_L);			//Get an int indicating the state of a list
     //send_empty_command(fd, BRIDGE_DESTROY_L);			//Destroy all the list of the module releasing memory (IMPORTANT!!)
-    struct complex_struct tmp;
-    strcpy((tmp.messages)[0],"Complex struct message 1");
-    strcpy((tmp.messages)[1], "Complex struct message 2");
-    strcpy((tmp.messages)[2], "Complex struct message 3");
-    tmp.value = 3;
-    write_struct(fd, BRIDGE_W_CS, &tmp);
-    write_several_messages(fd);
-    read_all_messages(fd);
+
+    // struct complex_struct tmp;
+    // strcpy((tmp.messages)[0],"Complex struct message 1");
+    // strcpy((tmp.messages)[1], "Complex struct message 2");
+    // strcpy((tmp.messages)[2], "Complex struct message 3");
+    // tmp.value = 3;
+    // write_struct(fd, BRIDGE_W_CS, &tmp);
+    // write_several_messages(fd);
+    // read_all_messages_s(fd);
+    menu(fd);
     close (fd);
     return 0;
 }
