@@ -80,7 +80,7 @@ void create_s(int fd){
 
 struct list_struct
 {
-	int message;
+	char* message;
 	struct list_head list;
 	
 };
@@ -93,13 +93,13 @@ struct list_struct
  * @param message 
  * @return struct list_struct* : nodo completo para agregar a la lista  con 
  */
-struct list_struct* create_l(int* message){
+struct list_struct* create_l(char* message){
     struct list_struct *node;
-    int date = *message;
+    //char *date = message;
     
     node = (struct list_struct*)malloc(sizeof(struct list_struct));
 
-    node -> message = date;
+    node -> message = message;
     INIT_LIST_HEAD( &node -> list );
 
     return node;
@@ -113,7 +113,8 @@ struct list_struct* create_l(int* message){
 void read_all_messages_l(struct list_head node_head){
     struct list_struct *pos;
     list_for_each_entry(pos,&node_head,list){
-        printf("%p\t%d -> ",&pos->list, pos->message);
+        //printf("%p\t%s -> ",&pos->list, pos->message);
+        printf("%s -> ", pos->message);
     }
 }
 
@@ -121,28 +122,15 @@ void main_list(int fd){
 
     //Crear los nodos con el dato
     struct list_struct *pos;
-    int message = 01;
-    struct list_struct *node1 = create_l(&message);
-    message = 02;
-    struct list_struct *node2 = create_l(&message);
-    message = 03;
-    struct list_struct *node3 = create_l(&message);
-    message = 04;
-    struct list_struct *node4 = create_l(&message);
- 
-
-    // printf("node:\t%p\t%p\t%p\n",&node->list,
-    //                      (node->list).next,
-    //                      (node->list).prev);
-
-    //printf("\t\t%p\t%d",&pos->list, pos->message);
-
-    // printf("\nnode2:\t%p\t%p\t%p",&node2->list,
-    //                      (node2->list).next,
-    //                      (node2->list).prev);
-
-    //printf("\t\t%p\t%d",&pos->list, pos->message);
-    
+    char* message1 = "01";
+    struct list_struct *node1 = create_l(message1);
+    char* message2 = "02";
+    struct list_struct *node2 = create_l(message2);
+    char* message3 = "03";
+    struct list_struct *node3 = create_l(message3);
+    char* message4 = "04";
+    struct list_struct *node4 = create_l(message4);
+     
     //nodo cabeza
     LIST_HEAD(list_head);
 
@@ -156,7 +144,8 @@ void main_list(int fd){
     //read_all_messages_l(list_head, pos);
     // Mostrar datos de los nodos
     list_for_each_entry(pos,&list_head,list){
-        printf("%p\t%d -> ",&pos->list, pos->message);
+        //printf("%p\t%s -> ",&pos->list, pos->message);
+        printf("%s -> ", pos->message);
     }
 
     
