@@ -1,0 +1,1 @@
+cmd_/home/vane/Desktop/so/lab1/bridge_module_kernel_data_structures/bridge.mod := { echo  /home/vane/Desktop/so/lab1/bridge_module_kernel_data_structures/bridge.o;  echo; } > /home/vane/Desktop/so/lab1/bridge_module_kernel_data_structures/bridge.mod
